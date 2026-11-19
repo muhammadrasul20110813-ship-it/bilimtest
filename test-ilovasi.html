@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BilimTest — 5–11-sinf testlari</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2140;--mut:#6b7392;--ac:#5b5bf0;--ok:#16a34a;--no:#dc2626;--bd:#e3e7f3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1224;--card:#1a1f3a;--tx:#eef0ff;--mut:#9aa3c7;--bd:#2a3158}}
+:root[data-theme=dark]{--bg:#0f1224;--card:#1a1f3a;--tx:#eef0ff;--mut:#9aa3c7;--bd:#2a3158}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,#5b5bf0,#a855f7);color:#fff;padding:22px 16px 40px;text-align:center}
+header h1{margin:0;font-size:28px}header p{margin:6px 0 0;opacity:.9}
+main{max-width:980px;margin:-24px auto 40px;padding:0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sub{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px 10px;text-align:center;cursor:pointer;transition:.2s;border-top:5px solid hsl(var(--h),70%,55%)}
+.sub:hover{transform:translateY(-4px);box-shadow:0 10px 24px hsla(var(--h),70%,50%,.25)}
+.sub b{display:block;margin-top:6px;font-size:15px}.sub .e{font-size:34px}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.top h2{margin:0;font-size:22px;flex:1}
+button,.btn{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:10px 16px;background:var(--ac);color:#fff;text-decoration:none;display:inline-block}
+.ghost{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);cursor:pointer}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.topic{display:flex;align-items:center;gap:10px;padding:14px;border:1px solid var(--bd);border-radius:14px;margin-bottom:10px;flex-wrap:wrap}
+.topic .n{flex:1;min-width:150px}.topic small{color:var(--mut);display:block;margin-top:2px}
+.vid{background:#ef4444}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin:8px 0 18px}.bar i{display:block;height:100%;background:var(--ac);transition:.3s}
+.q{font-size:20px;font-weight:600;margin:6px 0 16px}
+.opt{display:block;width:100%;text-align:left;margin-bottom:10px;background:var(--bg);color:var(--tx);border:2px solid var(--bd);padding:13px 14px}
+.opt:hover:not(:disabled){border-color:var(--ac)}
+.opt.ok{border-color:var(--ok);background:rgba(22,163,74,.15)}.opt.no{border-color:var(--no);background:rgba(220,38,38,.15)}
+.score{font-size:56px;font-weight:800;text-align:center;margin:10px 0;color:var(--ac)}
+.c{text-align:center}.mut{color:var(--mut)}
+</style></head><body>
+<header><h1>🎓 BilimTest</h1><p>5–11-sinf o‘quvchilari uchun fanlar bo‘yicha testlar va video darslar</p></header>
+<main id="app"></main>
+<script>
+// ===== MA’LUMOTLAR =====
+// fan: id|nom|emoji|rang|sinflar:mavzu1,mavzu2;...
+const SUBJ=`bio|Biologiya|🧬|140|5:Tirik tabiat,O’simliklar;6:Hujayra,Gulli o’simliklar;7:Hayvonlar,Umurtqasizlar;8:Odam anatomiyasi,Qon aylanishi;9:Genetika,Evolyutsiya;10:Hujayra biologiyasi,Moddalar almashinuvi;11:Ekologiya,Molekulyar biologiya
+huq|Huquq|⚖️|220|5:Qoidalar va majburiyatlar,Bola huquqlari;6:Oila huquqi,Fuqarolik;7:Davlat va huquq,Qonunlar;8:Konstitutsiya asoslari,Huquqbuzarlik;9:Konstitutsiya,Fuqarolik huquqi;10:Davlat hokimiyati,Jinoyat huquqi;11:Xalqaro huquq,Mehnat huquqi
+mat|Matematika|➗|250|5:Natural sonlar,Ko’paytirish;6:Qo’shish va ayirish,Ko’paytirish va bo’lish
+alg|Algebra|📐|260|7:Tenglamalar,Qisqa ko’paytirish;8:Kvadrat tenglama,Tengsizliklar;9:Daraja va ildiz,Funksiyalar;10:Logarifm,Trigonometriya;11:Hosila,Integral
+gm|Geometriya|📏|280|7:Uchburchaklar,Burchaklar;8:Pifagor teoremasi,To’rtburchaklar;9:Aylana va doira,Yuzlar;10:Stereometriya,Ko’pyoqlar;11:Aylanish jismlari,Hajmlar
+ing|Ingliz tili|🇬🇧|350|5:Words,Grammar basics;6:Present Simple,To be;7:Past Simple,Irregular verbs;8:Future,Conditionals;9:Passive voice,Reported speech;10:Tenses review,Vocabulary;11:IELTS grammar,Reading
+rus|Rus tili|🇷🇺|0|5:Алфавит,Слова;6:Приветствие,Существительные;7:Глаголы,Прилагательные;8:Падежи,Предложения;9:Времена,Текст;10:Грамматика,Лексика;11:Синтаксис,Сочинение
+geg|Geografiya|🌍|190|5:Yer sharsi,Okeanlar;6:Materiklar,Xarita;7:Tog’lar,Iqlim;8:O’zbekiston tabiati,Aholisi;9:Xo’jaligi,Mintaqalar;10:Dunyo siyosiy xaritasi,Aholi;11:Global muammolar,Iqtisodiy geografiya
+iqt|Iqtisod|💹|45|5:Pul nima,Ehtiyojlar;6:Mehnat,Savdo;7:Oila byudjeti,Bozor;8:Talab va taklif,Narx;9:Ishlab chiqarish,Soliqlar;10:Pul va bank,Inflyatsiya;11:Makroiqtisod,Tashqi savdo
+fiz|Fizika|⚡|30|7:Harakat,Kuch;8:Issiqlik,Elektr;9:Om qonuni,Optika;10:Mexanika,Termodinamika;11:Atom fizikasi,To’lqinlar
+kim|Kimyo|🧪|160|7:Modda,Aralashma;8:Oksidlar,Kislotalar;9:Davriy jadval,Reaksiyalar;10:Organik kimyo,Uglevodorodlar;11:Elektrokimyo,Polimerlar
+ona|Ona tili|📝|10|5:Tovush va harf,So’z turkumlari;6:Ot,Sifat;7:Fe’l,Ravish;8:Gap bo’laklari,Sintaksis;9:Qo’shma gap,Imlo;10:Uslubiyat,Nutq;11:Til tarixi,Insho
+adb|Adabiyot|📚|330|5:Ertaklar,She’rlar;6:Maqollar,Hikoyalar;7:Navoiy,Bobur;8:Qodiriy,Cho’lpon;9:Mumtoz adabiyot,Roman;10:Jadid adabiyoti,Dostonlar;11:Zamonaviy adabiyot,Jahon adabiyoti
+ut|O’zbekiston tarixi|🏛️|20|5:Ibtidoiy jamiyat,Qadimgi davlatlar;6:Amir Temur,Temuriylar;7:Ulug’bek,Xonliklar;8:Chor Rossiyasi,Jadidlar;9:Sovet davri,Mustaqillik;10:Yangi O’zbekiston,Konstitutsiya;11:Taraqqiyot yo’li,Zamonaviy tarix
+jt|Jahon tarixi|🗺️|200|5:Qadimgi Misr,Yunoniston;6:Rim,O’rta asrlar;7:Uyg’onish davri,Kashfiyotlar;8:Yangi davr,Inqiloblar;9:Birinchi jahon urushi,Ikkinchi jahon urushi;10:Sovuq urush,Dekolonizatsiya;11:Globallashuv,Xalqaro munosabatlar`
+.split("\n").map(l=>{let[i,n,e,h,t]=l.split("|"),T={};t.split(";").forEach(x=>{let[g,v]=x.split(":");T[+g]=v.split(",")});return{i,n,e,h,T}});
+
+// savol: fan|sinf|mavzu#|savol|variantlar(to’g’risi birinchi)
+const BANK=`bio|5|0|Tirik organizmning asosiy belgisi qaysi?|Nafas olish;Toshga aylanish;Erish;Qotish
+bio|6|0|Hujayraning “energiya stansiyasi” qaysi?|Mitoxondriya;Yadro;Vakuola;Ribosoma
+bio|6|1|Fotosintez qaysi organoidda boradi?|Xloroplast;Mitoxondriya;Ribosoma;Yadro
+bio|7|0|Qaysi hayvon sut emizuvchi?|Delfin;Akula;Qurbaqa;Timsoh
+bio|8|1|Odam yuragi necha kamerali?|4;2;3;5
+bio|9|0|Irsiyat birligi nima?|Gen;Hujayra;Organ;To’qima
+huq|9|0|O’zbekiston Konstitutsiyasi qachon qabul qilingan?|1992-yil 8-dekabr;1991-yil 1-sentabr;1995-yil;2000-yil
+huq|10|0|Davlat hokimiyati nechta tarmoqqa bo’linadi?|3;2;4;5
+alg|7|1|(a+b)² qanday yoyiladi?|a²+2ab+b²;a²+b²;a²−2ab+b²;2a+2b
+alg|8|0|x²−9=0 tenglamaning ildizlari?|±3;3;9;±9
+alg|9|0|2⁵ nechaga teng?|32;10;25;64
+alg|10|0|log₂8 nechaga teng?|3;2;4;8
+alg|11|0|(x²)’ hosila nimaga teng?|2x;x;x²;2
+gm|7|0|Uchburchak burchaklari yig’indisi?|180°;360°;90°;270°
+gm|8|0|To’g’ri burchakli uchburchakda katetlar 3 va 4 bo’lsa, gipotenuza?|5;6;7;4
+gm|9|1|Doira yuzi formulasi?|πr²;2πr;πd²;r²
+gm|10|0|Kubning qirralari soni?|12;8;6;10
+gm|11|1|Shar hajmi formulasi?|4/3 πr³;4πr²;πr³;2πr
+ing|5|0|“Apple” so’zining tarjimasi?|Olma;Nok;Uzum;Banan
+ing|6|1|“She ___ a student.” To’g’risi?|is;are;am;be
+ing|7|0|“Went” qaysi fe’lning o’tgan zamoni?|go;see;come;take
+rus|5|0|«Книга» so’zining tarjimasi?|Kitob;Daftar;Qalam;Stol
+rus|6|0|«Привет» nima degani?|Salom;Xayr;Rahmat;Kechirasiz
+geg|5|1|Yerdagi eng katta okean?|Tinch okeani;Atlantika;Hind;Shimoliy Muz
+geg|7|0|Dunyoning eng baland cho’qqisi?|Everest;Elbrus;Mont-Blan;Xan-Tengri
+geg|8|0|O’zbekiston poytaxti?|Toshkent;Samarqand;Buxoro;Xiva
+iqt|8|0|Talab oshsa, narx odatda?|Oshadi;Tushadi;O’zgarmaydi;Nolga teng
+iqt|10|0|O’zbekistonning milliy valyutasi?|So’m;Dollar;Rubl;Tenge
+fiz|7|0|SI da tezlik birligi?|m/s;kg;N;J
+fiz|8|1|Elektr zaryadi birligi?|Kulon;Nyuton;Vatt;Joul
+fiz|9|0|Om qonuni formulasi?|I=U/R;I=UR;U=I/R;R=UI
+fiz|10|0|Yorug’lik tezligi taxminan?|300 000 km/s;3000 km/s;30 000 km/s;1000 km/s
+kim|7|0|Suvning kimyoviy formulasi?|H₂O;CO₂;O₂;NaCl
+kim|8|0|Osh tuzi formulasi?|NaCl;KCl;CaCO₃;NaOH
+kim|9|0|Davriy jadvalni kim yaratgan?|Mendeleyev;Nyuton;Lomonosov;Bor
+kim|10|1|Metan formulasi?|CH₄;C₂H₆;C₂H₄;CO
+ona|6|0|“Kitob” qaysi so’z turkumi?|Ot;Sifat;Fe’l;Son
+ona|7|1|“Tez” so’zi qaysi turkum?|Ravish;Ot;Fe’l;Sifat
+ona|7|0|“Yozmoq” qaysi turkum?|Fe’l;Ot;Sifat;Ravish
+adb|7|0|“Xamsa” muallifi kim?|Alisher Navoiy;Bobur;Cho’lpon;Fitrat
+adb|8|0|“O’tkan kunlar” muallifi kim?|Abdulla Qodiriy;Oybek;G’afur G’ulom;Hamza
+adb|7|1|“Boburnoma” muallifi kim?|Zahiriddin Bobur;Navoiy;Mashrab;Uvaysiy
+ut|6|0|Amir Temur qaysi yilda tug’ilgan?|1336;1405;1370;1500
+ut|7|0|Mirzo Ulug’bek nima bilan mashhur?|Astronomiya;Jang san’ati;Savdo;Me’morchilik
+ut|11|0|O’zbekiston mustaqilligi qachon e’lon qilingan?|1991-yil 1-sentabr;1990-yil;1992-yil;1989-yil
+jt|6|0|Qadimgi Misr hukmdori nima deb atalgan?|Fir’avn;Sulton;Imperator;Xon
+jt|9|0|Ikkinchi jahon urushi qachon boshlangan?|1939;1914;1941;1945
+jt|10|1|Fransuz inqilobi qachon boshlangan?|1789;1689;1815;1917
+bio|5|1|O’simliklar oziq moddani qayerdan oladi?|Tuproq va quyosh nuri;Faqat suvdan;Hayvonlardan;Toshdan
+bio|6|1|Gulning urug’chisidan nima hosil bo’ladi?|Meva;Ildiz;Poya;Barg
+bio|7|1|Hasharotlarning necha oyog’i bor?|6;8;4;10
+bio|8|0|Odamda eng katta organ qaysi?|Teri;Jigar;Yurak;Miya
+bio|9|1|Evolyutsiya nazariyasini kim yaratgan?|Charlz Darvin;Mendel;Pasteur;Linney
+bio|10|0|DNK hujayraning qayerida joylashgan?|Yadroda;Ribosomada;Vakuolada;Hujayra po’stida
+bio|10|1|Oqsillar qaysi monomerlardan tuzilgan?|Aminokislotalar;Glyukoza;Nukleotidlar;Yog’ kislotalari
+bio|11|0|Ekotizimda ishlab chiqaruvchilar kimlar?|Yashil o’simliklar;Yirtqichlar;Qo’ziqorinlar;O’txo’rlar
+bio|11|1|Qaysi azot asosi faqat RNKda bor?|Uratsil;Timin;Adenin;Guanin
+huq|5|1|Bola necha yoshgacha bola hisoblanadi?|18 yoshgacha;16 yoshgacha;14 yoshgacha;21 yoshgacha
+huq|7|0|Davlat ramzlari qaysilar?|Bayroq, gerb, madhiya;Faqat bayroq;Pul va tanga;Poytaxt
+huq|8|0|Qonunlarni qaysi organ qabul qiladi?|Oliy Majlis;Sud;Hokimlik;Prokuratura
+huq|10|1|Jinoiy javobgarlik umumiy qoidaga ko’ra necha yoshdan boshlanadi?|16;14;18;12
+huq|11|1|Mehnat shartnomasi qanday shaklda tuziladi?|Yozma;Faqat og’zaki;Telefon orqali;Shart emas
+alg|7|1|(a−b)² qanday yoyiladi?|a²−2ab+b²;a²+b²;a²−b²;a²+2ab+b²
+alg|8|1|x > 3 va x < 6 ni qanoatlantiruvchi butun son?|4;3;6;2
+alg|9|1|y = 2x + 1 funksiyada x = 3 bo’lsa, y = ?|7;6;5;8
+alg|10|1|sin 30° nechaga teng?|1/2;√3/2;1;0
+alg|10|1|cos 0° nechaga teng?|1;0;1/2;−1
+alg|11|1|∫2x dx = ?|x²+C;2x²+C;x+C;2+C
+gm|7|0|Teng yonli uchburchakda nechta tomon o’zaro teng?|2;3;1;0
+gm|8|0|Tomoni 1 bo’lgan kvadratning diagonali?|√2;2;1;√3
+gm|9|0|Aylana uzunligi formulasi?|2πr;πr²;πd²;r²
+gm|9|1|Radiusi 1 bo’lgan doiraning yuzi?|π;2π;π/2;4π
+gm|10|1|Qirrasi a bo’lgan kubning hajmi?|a³;a²;3a;6a²
+gm|11|0|Konusning hajmi formulasi?|⅓πr²h;πr²h;2πrh;πrl
+ing|5|0|“Hello” nimani anglatadi?|Salom;Xayr;Rahmat;Iltimos
+ing|5|1|“Cat” tarjimasi?|Mushuk;It;Qush;Baliq
+ing|6|0|He ___ football every day.|plays;play;playing;played
+ing|7|1|“Buy” ning o’tgan zamon shakli?|bought;buyed;boughted;buys
+ing|8|0|Tomorrow I ___ visit my friend.|will;did;was;have
+ing|8|1|If it rains, we ___ at home.|will stay;stayed;staying;stays
+ing|9|0|“The book ___ by him.” (Passive)|was written;wrote;writing;writes
+ing|10|0|“I have lived here since 2010.” Qaysi zamon?|Present Perfect;Past Simple;Future Simple;Present Simple
+ing|11|1|“Big” so’zining sinonimi?|Large;Tiny;Small;Short
+rus|5|1|«Дом» nimani anglatadi?|Uy;Ko’cha;Maktab;Daraxt
+rus|6|1|«Спасибо» nima degani?|Rahmat;Salom;Xayr;Kechirasiz
+rus|7|0|«Читать» qaysi so’z turkumi?|Fe’l;Ot;Sifat;Ravish
+rus|8|0|Rus tilida nechta kelishik bor?|6;5;7;4
+geg|6|0|Yerda nechta materik bor (maktab dasturi bo’yicha)?|6;5;7;4
+geg|6|1|Xaritada shimol odatda qayerda bo’ladi?|Tepada;Pastda;O’ngda;Chapda
+geg|7|1|Iqlimni belgilovchi asosiy omil?|Geografik kenglik;Daryo uzunligi;Tuproq rangi;Aholi soni
+geg|9|0|Orolbo’yi ekologik muammosi qaysi dengizga bog’liq?|Orol;Kaspiy;Qora;Oq
+geg|10|0|Aholisi eng ko’p qit’a qaysi?|Osiyo;Afrika;Yevropa;Avstraliya
+geg|11|0|Global isishga asosan qaysi gazlar sabab bo’ladi?|Issiqxona gazlari;Kislorod;Azot;Argon
+iqt|5|0|Pul nima uchun kerak?|Ayirboshlash vositasi;O’yin uchun;Bezak uchun;Hech nima uchun
+iqt|6|1|Tovar yoki xizmatni pulga olish nima deyiladi?|Xarid;Ishlab chiqarish;Eksport;Soliq
+iqt|7|0|Oila byudjeti nima?|Oilaning daromad va xarajatlari;Davlat puli;Bank foizi;Soliq turi
+iqt|9|1|Davlatga to’lanadigan majburiy to’lov?|Soliq;Qarz;Sovg’a;Foiz
+iqt|10|1|Narxlarning umumiy oshishi nima deyiladi?|Inflyatsiya;Deflyatsiya;Eksport;Import
+iqt|11|1|Chet elga tovar sotish nima deyiladi?|Eksport;Import;Soliq;Subsidiya
+fiz|7|1|Og’irlik kuchi formulasi?|F=mg;F=m/g;F=g/m;F=m+g
+fiz|8|0|Suv normal bosimda necha °C da qaynaydi?|100;0;50;212
+fiz|9|1|Yorug’likning oynadan qaytishi qanday hodisa?|Qaytish;Sinish;Difraksiya;Interferensiya
+fiz|10|1|Energiyaning SI dagi birligi?|Joul;Vatt;Nyuton;Paskal
+fiz|11|0|Atom yadrosi qaysi zarralardan iborat?|Proton va neytron;Elektron va proton;Faqat elektronlar;Fotonlar
+fiz|11|1|To’lqin uzunligi qaysi birlikda o’lchanadi?|Metr;Gerts;Sekund;Vatt
+kim|7|1|Qaysi biri aralashma?|Havo;Distillangan suv;Temir;Kislorod
+kim|8|0|CO₂ qaysi modda?|Karbonat angidrid;Is gazi;Metan;Kislorod
+kim|8|1|HCl qaysi modda?|Xlorid kislota;Ishqor;Tuz;Oksid
+kim|9|1|Kislota eritmasining pH qiymati qanday?|7 dan kichik;7 ga teng;7 dan katta;Doim 14
+kim|11|0|Elektroliz qaysi muhitda boradi?|Eritma yoki suyuqlanmada;Faqat qattiq holatda;Vakuumda;Gazda
+kim|11|1|Polimerlar qanday birikmalar?|Yuqori molekulyar;Metallar;Gazlar;Oddiy tuzlar
+ona|5|0|O’zbek alifbosida nechta harf bor?|29;28;32;26
+ona|5|1|Ot qaysi so’roqlarga javob beradi?|Kim? Nima?;Qanday?;Nima qildi?;Qancha?
+ona|6|1|“Qizil” so’zi qaysi turkum?|Sifat;Ot;Fe’l;Son
+ona|8|0|Gapning asosiy bo’laklari qaysilar?|Ega va kesim;Aniqlovchi va hol;To’ldiruvchi;Undalma
+ona|9|0|Ikki sodda gapdan tuzilgan gap qanday nomlanadi?|Qo’shma gap;Sodda gap;So’z birikmasi;Undov
+ona|10|1|Nutqning og’zaki shakllari?|Monolog va dialog;Faqat xat;Rasm;Jadval
+adb|5|0|“Zumrad va Qimmat” qaysi janrga kiradi?|Xalq ertagi;Roman;Doston;Qasida
+adb|6|0|Maqol nima?|Xalq donoligi aks etgan qisqa ibora;Uzun roman;Pyesa;Maqola
+adb|8|1|“Kecha va kunduz” romani muallifi?|Cho’lpon;Oybek;Qodiriy;Navoiy
+adb|9|0|“Mehrobdan chayon” muallifi kim?|Abdulla Qodiriy;Navoiy;Bobur;Fitrat
+adb|10|1|“Alpomish” qanday asar?|Xalq dostoni;Roman;Hikoya;Pyesa
+adb|11|1|“Hamlet” tragediyasi muallifi?|Shekspir;Gyote;Tolstoy;Dante
+ut|5|0|Eng qadimgi odamlar qurollarini nimadan yasagan?|Tosh;Temir;Plastik;Shisha
+ut|5|1|Qadimgi Xorazm qayerda joylashgan?|Amudaryo quyi oqimida;Farg’onada;Surxondaryoda;Qashqadaryoda
+ut|6|1|Temuriylar davlatining poytaxti?|Samarqand;Toshkent;Buxoro;Xiva
+ut|7|1|Qo’qon xonligi qaysi vodiyda joylashgan?|Farg’ona;Zarafshon;Surxon;Qashqadaryo
+ut|8|1|Jadidlarning asosiy maqsadi nima edi?|Ma’rifat va yangilanish;Urush;Savdo;Soliq yig’ish
+ut|9|0|Mustaqillik kuni qachon nishonlanadi?|1-sentabr;9-may;21-mart;8-dekabr
+ut|10|0|Konstitutsiya kuni qachon nishonlanadi?|8-dekabr;1-sentabr;21-mart;9-may
+ut|10|1|Navro’z bayrami qachon nishonlanadi?|21-mart;1-yanvar;1-sentabr;8-dekabr
+ut|11|1|O’zbekiston BMTga qaysi yil a’zo bo’lgan?|1992;1991;1995;2000
+jt|5|0|Misr ehromlari nima uchun qurilgan?|Fir’avnlar maqbarasi sifatida;Maktab sifatida;Bozor sifatida;Port sifatida
+jt|5|1|Olimpiya o’yinlari qayerda paydo bo’lgan?|Qadimgi Yunonistonda;Misrda;Rimda;Xitoyda
+jt|6|1|G’arbiy Rim imperiyasi qaysi yili qulagan?|476-yil;1000-yil;100-yil;1453-yil
+jt|7|0|Uyg’onish davri qaysi mamlakatda boshlangan?|Italiya;Fransiya;Rossiya;Xitoy
+jt|7|1|1492-yilda Amerikaga yetib borgan sayyoh?|Kolumb;Magellan;Vasko da Gama;Kuk
+jt|8|0|Bug’ mashinasini takomillashtirgan olim?|Jeyms Vatt;Edison;Bell;Nobel
+jt|9|0|Birinchi jahon urushi qachon boshlangan?|1914;1939;1905;1918
+jt|10|0|Sovuq urushning asosiy raqiblari?|AQSH va SSSR;Xitoy va Hindiston;Fransiya va Germaniya;Yaponiya va Koreya
+jt|11|0|BMT qaysi yilda tashkil etilgan?|1945;1919;1991;1950`
+.split("\n").map(l=>{let[s,g,t,q,o]=l.split("|");return{s,g:+g,t:+t,q,o:o.split(";")}});
+
+// ===== YORDAMCHI =====
+const $=document.getElementById("app"),R=n=>1+Math.floor(Math.random()*n),sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+let st={s:null,g:null,p:null},qz=null;
+const sub=id=>SUBJ.find(s=>s.i==id);
+const bank=(s,g,t)=>BANK.filter(b=>b.s==s&&b.g==g&&b.t==t);
+const isGen=(s,t,g)=>GF[`${s}|${g}|${t}`]||s=="mat"||(s=="alg"&&t==0)||(s=="gm"&&t==1&&g<=8)||(s=="fiz"&&t==0&&g==7);
+function gen(s,g,t){let q,a,f=GF[`${s}|${g}|${t}`];if(f)[q,a]=f(g);else{
+ if(s=="alg"){let x=R(9),k=R(5)+1,b=R(9);
+  if(g==7){q=`${k}x + ${b} = ${k*x+b} bo’lsa, x = ?`;a=x}
+  else if(g==8){q=`x² = ${x*x} va x > 0 bo’lsa, x = ?`;a=x}
+  else if(g==9){q=`${x+1}² = ?`;a=(x+1)*(x+1)}
+  else if(g==10){q=`log₂${2**(x%6+1)} = ?`;a=x%6+1}
+  else{q=`f(x) = ${k}x² bo’lsa, f’(1) = ?`;a=2*k}}
+ else if(s=="gm"){let x=R(8)*10+R(8)*5+10,w=R(9)+2,l=w+R(9);
+  if(g==7){q=`Qo’shni burchaklardan biri ${x}° bo’lsa, ikkinchisi necha gradus?`;a=180-x}
+  else{q=`To’g’ri to’rtburchak tomonlari ${l} va ${w} bo’lsa, yuzi?`;a=l*w}}
+ else if(s=="fiz"){let v=R(9)*5,t2=R(9)+1;q=`Tezligi ${v} m/s bo’lgan jism ${t2} s da necha metr yo’l bosadi?`;a=v*t2}
+ else if(t==0){let m=g==5?20:100,x=R(m),y=R(m);if(R(2)==1){q=`${x} + ${y} = ?`;a=x+y}else{q=`${x+y} − ${y} = ?`;a=x}}
+ else if(t==2){let m=g==5?9:12,x=R(m)+1,y=R(m)+1;q=`${x*y} ÷ ${y} = ?`;a=x}
+ else if(t==3){let x=R(g==5?12:20)+1;q=`${x}² = ?`;a=x*x}
+ else{let m=g==5?9:15,x=R(m)+1,y=R(m)+1;q=`${x} × ${y} = ?`;a=x*y}
+ }
+ let st=Math.abs(a)>50?10:1;return{q,o:[a,a+st,a-st,a+2*st].map(String),c:0}}
+function store(k,v){try{if(v!==undefined)localStorage.setItem(k,v);return localStorage.getItem(k)}catch(e){return null}}
+const eff=()=>st.s=="mat"&&st.g>=7?st.p:st.s;
+
+// Juftlik bazasi: fan|sinf|mavzu#|savol shabloni|a=to’g’ri javob;...  (har bir juftlik alohida savol bo’ladi)
+`ing|5|0|“{a}” so’zining tarjimasi?|dog=It;cat=Mushuk;book=Kitob;house=Uy;water=Suv;bread=Non;school=Maktab;teacher=O’qituvchi;friend=Do’st;red=Qizil;blue=Ko’k;green=Yashil;mother=Ona;father=Ota;sun=Quyosh;tree=Daraxt;car=Mashina;apple=Olma;milk=Sut;door=Eshik
+ing|7|1|“{a}” fe’lining o’tgan zamon shakli?|go=went;see=saw;eat=ate;take=took;come=came;write=wrote;give=gave;run=ran;buy=bought;drink=drank;speak=spoke;swim=swam;know=knew;get=got;make=made
+ing|10|1|“{a}” so’zining tarjimasi?|important=Muhim;difficult=Qiyin;beautiful=Chiroyli;dangerous=Xavfli;expensive=Qimmat;happy=Baxtli;strong=Kuchli;quick=Tez;weak=Zaif;clean=Toza
+rus|5|1|«{a}» so’zining tarjimasi?|мама=Ona;папа=Ota;вода=Suv;хлеб=Non;школа=Maktab;книга=Kitob;собака=It;кошка=Mushuk;окно=Deraza;стол=Stol;друг=Do’st;город=Shahar
+rus|6|0|«{a}» iborasining tarjimasi?|добрый день=Xayrli kun;до свидания=Xayr;пожалуйста=Iltimos;извините=Kechirasiz;спокойной ночи=Xayrli tun;как дела=Ishlar qalay
+geg|10|0|“{a}” davlatining poytaxti qaysi?|O’zbekiston=Toshkent;Qozog’iston=Astana;Rossiya=Moskva;Fransiya=Parij;Germaniya=Berlin;Yaponiya=Tokio;Xitoy=Pekin;Turkiya=Anqara;Italiya=Rim;Misr=Qohira;Hindiston=Nyu-Dehli;AQSH=Vashington;Qirg’iziston=Bishkek;Tojikiston=Dushanbe;Turkmaniston=Ashxobod;Buyuk Britaniya=London;Ispaniya=Madrid;Janubiy Koreya=Seul;Ozarbayjon=Boku
+geg|8|0|“{a}” markazi qaysi shahar?|Samarqand viloyati=Samarqand;Buxoro viloyati=Buxoro;Xorazm viloyati=Urganch;Andijon viloyati=Andijon;Farg’ona viloyati=Farg’ona;Namangan viloyati=Namangan;Qashqadaryo viloyati=Qarshi;Surxondaryo viloyati=Termiz;Navoiy viloyati=Navoiy;Jizzax viloyati=Jizzax;Sirdaryo viloyati=Guliston;Toshkent viloyati=Nurafshon;Qoraqalpog’iston=Nukus
+kim|9|0|“{a}” elementining kimyoviy belgisi?|Vodorod=H;Kislorod=O;Uglerod=C;Azot=N;Natriy=Na;Kaliy=K;Kalsiy=Ca;Temir=Fe;Mis=Cu;Rux=Zn;Oltin=Au;Kumush=Ag;Xlor=Cl;Oltingugurt=S;Geliy=He;Magniy=Mg;Alyuminiy=Al;Fosfor=P
+kim|8|1|“{a}” ning formulasi qaysi?|Suv=H₂O;Karbonat angidrid=CO₂;Osh tuzi=NaCl;Ammiak=NH₃;Metan=CH₄;Kalsiy karbonat=CaCO₃;Sulfat kislota=H₂SO₄;Natriy ishqori=NaOH;Xlorid kislota=HCl;Glyukoza=C₆H₁₂O₆
+adb|9|0|“{a}” asarining muallifi kim?|Xamsa=Alisher Navoiy;Boburnoma=Zahiriddin Bobur;Qutadg’u bilig=Yusuf Xos Hojib;Devoni lug’otit turk=Mahmud Koshg’ariy
+adb|11|1|“{a}” asarining muallifi kim?|Hamlet=Shekspir;Faust=Gyote;Don Kixot=Servantes;Yevgeniy Onegin=Pushkin;Ilohiy komediya=Dante;Urush va tinchlik=Tolstoy
+adb|8|1|“{a}” asarining muallifi kim?|Kecha va kunduz=Cho’lpon;O’tkan kunlar=Abdulla Qodiriy;Shum bola=G’afur G’ulom;Sariq devni minib=Xudoyberdi To’xtaboyev;Ikki eshik orasi=O’tkir Hoshimov
+bio|8|0|“{a}” ning vazifasi nima?|Yurak=Qonni haydaydi;O’pka=Nafas olishni ta’minlaydi;Oshqozon=Ovqatni hazm qiladi;Buyrak=Siydik hosil qiladi;Jigar=Zararli moddalarni zararsizlantiradi;Miya=Tanani boshqaradi;Ko’z=Ko’rishni ta’minlaydi
+bio|6|0|“{a}” ning vazifasi nima?|Yadro=Irsiy axborotni saqlaydi;Mitoxondriya=Energiya ishlab chiqaradi;Xloroplast=Fotosintez o’tkazadi;Ribosoma=Oqsil sintezlaydi;Hujayra po’sti=Moddalar o’tishini boshqaradi;Vakuola=Hujayra shirasini saqlaydi
+fiz|9|0|“{a}” qaysi birlikda o’lchanadi?|Kuch=Nyuton;Energiya=Joul;Quvvat=Vatt;Bosim=Paskal;Kuchlanish=Volt;Tok kuchi=Amper;Qarshilik=Om;Chastota=Gerts;Massa=Kilogramm;Vaqt=Sekund
+ona|5|1|“{a}” so’zi qaysi so’z turkumiga kiradi?|kitob=Ot;daraxt=Ot;maktab=Ot;bola=Ot;qizil=Sifat;baland=Sifat;chiroyli=Sifat;yaxshi=Sifat;yozmoq=Fe’l;o’qimoq=Fe’l;kelmoq=Fe’l;bormoq=Fe’l;besh=Son;yigirma=Son;yuzinchi=Son;tez=Ravish;sekin=Ravish;juda=Ravish;asta=Ravish`.split("\n").forEach(l=>{let[s,g,t,tp,d]=l.split("|"),P=d.split(";").map(x=>x.split("="));P.forEach(([a,b])=>{let o=sh([...new Set(P.map(x=>x[1]))].filter(x=>x!=b)).slice(0,3);BANK.push({s,g:+g,t:+t,q:tp.replace("{a}",a),o:[b,...o]})})});
+// Yangi mavzular: fan|sinf|mavzu nomi
+`mat|5|Bo’lish
+mat|5|Kvadrat sonlar
+mat|6|Bo’lish
+mat|6|Kvadrat sonlar
+ing|5|Raqamlar
+ing|5|Oila a’zolari
+ing|6|Hayvonlar
+ing|7|Kasblar
+ing|8|Antonimlar
+rus|5|Sanoq
+rus|7|Fe’llar
+geg|6|Materiklar va okeanlar (savol-javob)
+ut|7|Muhim sanalar
+kim|10|Organik formulalar
+fiz|8|Formulalar
+bio|7|Hayvonlar sinflari
+huq|9|O’zbekiston Respublikasi
+ona|6|Antonimlar
+alg|8|Kvadratlar jadvali
+alg|9|Darajalar
+gm|8|Formulalar
+gm|7|Burchak turlari
+jt|6|Qadimgi sivilizatsiyalar
+iqt|8|Iqtisodiy atamalar`.split("\n").forEach(l=>{let[s,g,n]=l.split("|");sub(s).T[g].push(n)});
+// Yangi juftliklar: fan|sinf|mavzu#|shablon|a~javob;a~javob
+`ing|5|2|“{a}” raqamining tarjimasi?|one~Bir;two~Ikki;three~Uch;four~To’rt;five~Besh;six~Olti;seven~Yetti;eight~Sakkiz;nine~To’qqiz;ten~O’n
+ing|5|3|“{a}” so’zining tarjimasi?|brother~Aka yoki uka;sister~Opa yoki singil;grandmother~Buvi;grandfather~Bobo;uncle~Amaki;aunt~Xola;son~O’g’il;daughter~Qiz
+ing|6|2|“{a}” so’zining tarjimasi?|lion~Sher;horse~Ot;cow~Sigir;sheep~Qo’y;bird~Qush;fish~Baliq;rabbit~Quyon;monkey~Maymun;elephant~Fil;bear~Ayiq
+ing|7|2|“{a}” so’zining tarjimasi?|doctor~Shifokor;driver~Haydovchi;cook~Oshpaz;farmer~Dehqon;pilot~Uchuvchi;builder~Quruvchi;engineer~Muhandis;lawyer~Advokat
+ing|8|2|“{a}” so’zining antonimi (qarama-qarshi ma’noli so’z)?|hot~cold;big~small;fast~slow;up~down;early~late;rich~poor;old~young;open~close;light~dark;full~empty
+rus|5|2|«{a}» raqamining tarjimasi?|один~Bir;два~Ikki;три~Uch;четыре~To’rt;пять~Besh;шесть~Olti;семь~Yetti;восемь~Sakkiz;девять~To’qqiz;десять~O’n
+rus|7|2|«{a}» fe’lining tarjimasi?|читать~O’qimoq;писать~Yozmoq;говорить~Gapirmoq;идти~Bormoq;смотреть~Qaramoq;слушать~Eshitmoq;думать~O’ylamoq;жить~Yashamoq;помагать~Yordam bermoq
+geg|6|2|{a}?|Yer yuzidagi eng katta materik~Yevrosiyo;Eng sovuq materik~Antarktida;Eng kichik materik~Avstraliya;Eng katta okean~Tinch okeani;Eng kichik okean~Shimoliy Muz okeani;Sahroi Kabir joylashgan materik~Afrika;Amazonka daryosi joylashgan materik~Janubiy Amerika;Misr ehromlari joylashgan davlat~Misr
+ut|7|2|“{a}” qaysi yilda sodir bo’lgan?|Amir Temurning vafoti~1405;Amir Temurning tug’ilishi~1336;Mustaqillikning e’loni~1991;Konstitutsiyaning qabul qilinishi~1992;Ikkinchi jahon urushining tugashi~1945;Boburning tug’ilishi~1483;Ulug’bekning vafoti~1449;Birinchi jahon urushining boshlanishi~1914;Ikkinchi jahon urushining boshlanishi~1939
+kim|10|2|“{a}” ning formulasi qaysi?|Metan~CH₄;Etan~C₂H₆;Etilen~C₂H₄;Atsetilen~C₂H₂;Propan~C₃H₈;Benzol~C₆H₆;Etanol~C₂H₅OH;Sirka kislota~CH₃COOH;Metanol~CH₃OH
+fiz|8|2|“{a}” formulasi qaysi?|Tezlik~v = s/t;Zichlik~ρ = m/V;Bosim~p = F/S;Mexanik ish~A = F·s;Quvvat~N = A/t;Og’irlik kuchi~F = mg;Kinetik energiya~mv²/2;Om qonuni~I = U/R
+bio|7|2|“{a}” qaysi sinfga kiradi?|Delfin~Sut emizuvchi;Qurbaqa~Amfibiya;Timsoh~Sudralib yuruvchi;Burgut~Qush;Akula~Baliq;Kapalak~Hasharot;Ot~Sut emizuvchi;Ilon~Sudralib yuruvchi;Chumoli~Hasharot;Ko’rshapalak~Sut emizuvchi;Kaltakesak~Sudralib yuruvchi
+huq|9|2|O’zbekistonda {a} qaysi?|davlat tili~O’zbek tili;poytaxt~Toshkent;milliy valyuta~So’m;Konstitutsiya kuni~8-dekabr;Mustaqillik kuni~1-sentabr;saylov huquqi beriladigan yosh~18 yosh
+ona|6|2|“{a}” so’zining antonimi qaysi?|katta~kichik;baland~past;yaxshi~yomon;kun~tun;issiq~sovuq;keng~tor;tez~sekin;yangi~eski;to’g’ri~noto’g’ri;oq~qora
+alg|8|2|“{a}” nechaga teng?|11²~121;12²~144;13²~169;14²~196;15²~225;16²~256;17²~289;18²~324;19²~361;20²~400
+alg|9|2|“{a}” nechaga teng?|2³~8;2⁴~16;2⁶~64;3²~9;3³~27;3⁴~81;5²~25;5³~125;10³~1000;2⁷~128
+gm|8|2|“{a}” formulasi qaysi?|Kvadrat yuzi~a²;To’g’ri to’rtburchak yuzi~a·b;Uchburchak yuzi~½·a·h;Doira yuzi~πr²;Aylana uzunligi~2πr;Kvadrat perimetri~4a;Kub hajmi~a³;Pifagor teoremasi~a² + b² = c²;Parallelepiped hajmi~a·b·c;Silindr hajmi~πr²h
+gm|7|2|{a} li burchak qanday burchak?|90°~To’g’ri burchak;60°~O’tkir burchak;120°~O’tmas burchak;180°~Yoyiq burchak;30°~O’tkir burchak;100°~O’tmas burchak;45°~O’tkir burchak
+jt|6|2|“{a}” qaysi qadimgi sivilizatsiyaga tegishli?|Piramidalar~Misr;Kolizey~Rim;Akropol~Yunoniston;Buyuk Xitoy devori~Xitoy;Machu-Pikchu~Inklar
+iqt|8|2|“{a}” nima?|Daromad~Olingan pul;Xarajat~Sarflangan pul;Foyda~Daromad va xarajat farqi;Soliq~Davlatga majburiy to’lov;Kredit~Qaytariladigan qarz;Omonat~Bankka qo’yilgan pul;Eksport~Chet elga tovar sotish;Import~Chet eldan tovar olish`.split("\n").forEach(l=>{let[s,g,t,tp,d]=l.split("|"),P=d.split(";").map(x=>x.split("~"));P.forEach(([a,b])=>{let o=sh([...new Set(P.map(x=>x[1]))].filter(x=>x!=b)).slice(0,3);BANK.push({s,g:+g,t:+t,q:tp.replace("{a}",a),o:[b,...o]})})});
+// ===== AVTOMATIK (cheksiz) MAVZULAR: har biri 25 ta yangi savol beradi =====
+const GF={},gcd=(a,b)=>b?gcd(b,a%b):a,pk=a=>a[R(a.length)-1],TR=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[7,24,25]];
+function addG(s,gs,L){gs.forEach(g=>L.forEach(([n,f])=>{const T=sub(s).T[g];T.push(n);GF[`${s}|${g}|${T.length-1}`]=f}))}
+const rp=g=>{let a=R(20)+1,b=R(20)+1;return[`Tomonlari ${a} va ${b} bo’lgan to’g’ri to’rtburchak perimetri?`,2*(a+b)]},
+ry=g=>{let a=R(20)+1,b=R(20)+1;return[`Tomonlari ${a} va ${b} bo’lgan to’g’ri to’rtburchak yuzi?`,a*b]};
+addG('mat',[5,6],[
+['Ko’p xonali qo’shish',g=>{let m=g<6?90:900,x=R(m)+9,y=R(m)+9;return[`${x} + ${y} = ?`,x+y]}],
+['Ko’p xonali ayirish',g=>{let m=g<6?90:900,x=R(m)+9,y=R(m)+9;return[`${x+y} − ${y} = ?`,x]}],
+['Ko’paytirish jadvali',g=>{let x=R(9)+1,y=R(g<6?9:19)+1;return[`${x} × ${y} = ?`,x*y]}],
+['Qoldiqsiz bo’lish',g=>{let x=R(9)+1,y=R(g<6?9:19)+1;return[`${x*y} ÷ ${x} = ?`,y]}],
+['Kub sonlar',g=>{let x=R(g<6?6:10);return[`${x}³ = ?`,x**3]}],
+['Amallar tartibi',g=>{let a=R(20),b=R(9)+1,c=R(9)+1;return[`${a} + ${b} × ${c} = ?`,a+b*c]}],
+['Qavsli amallar',g=>{let a=R(20),b=R(20),c=R(9)+1;return[`(${a} + ${b}) × ${c} = ?`,(a+b)*c]}],
+['x + a = b',g=>{let x=R(50),a=R(50);return[`x + ${a} = ${x+a} bo’lsa, x = ?`,x]}],
+['a · x = b',g=>{let x=R(12),a=R(9)+1;return[`${a} · x = ${a*x} bo’lsa, x = ?`,x]}],
+['Foiz topish',g=>{let p=pk([10,20,25,50]),N=20*R(10);return[`${N} ning ${p}% i necha?`,N*p/100]}],
+['To’g’ri to’rtburchak perimetri',rp],['To’g’ri to’rtburchak yuzi',ry],
+['Kvadrat perimetri',g=>{let a=R(20)+1;return[`Tomoni ${a} bo’lgan kvadrat perimetri?`,4*a]}],
+['Kvadrat yuzi',g=>{let a=R(15)+1;return[`Tomoni ${a} bo’lgan kvadrat yuzi?`,a*a]}],
+['Uchburchak yuzi',g=>{let b=2*R(10),h=R(12);return[`Asosi ${b}, balandligi ${h} bo’lgan uchburchak yuzi?`,b*h/2]}],
+['Vaqt birliklari',g=>{let h=R(12);return[`${h} soat necha daqiqa?`,h*60]}],
+['Uzunlik birliklari',g=>{let k=R(20);return[`${k} km necha metr?`,k*1000]}],
+['Massa birliklari',g=>{let k=R(20);return[`${k} kg necha gramm?`,k*1000]}],
+['O’rtacha qiymat',g=>{let x=R(30)+5,d=R(4),e=R(4);return[`${x-d}, ${x+e}, ${x+d-e} sonlarining o’rtachasi?`,x]}],
+['Tezlik va yo’l',g=>{let v=R(9)*10,t=R(9);return[`Tezligi ${v} km/soat bo’lgan mashina ${t} soatda necha km yuradi?`,v*t]}],
+['EKUB',g=>{let m=R(5)+1,x=m*(R(9)+1),y=m*(R(9)+1);return[`${x} va ${y} sonlarining EKUBi?`,gcd(x,y)]}],
+['EKUK',g=>{let x=R(8)+1,y=R(8)+1;return[`${x} va ${y} sonlarining EKUKi?`,x*y/gcd(x,y)]}],
+['Juft sonlar yig’indisi',g=>{let n=R(8)+2;return[`2 + 4 + ... + ${2*n} = ?`,n*(n+1)]}],
+['Sonlar qatori',g=>{let a=R(20),d=R(9)+1;return[`${a}, ${a+d}, ${a+2*d}, ... keyingi son?`,a+3*d]}],
+['Pul masalalari',g=>{let p=(R(9)+1)*500,n=R(9)+1;return[`1 ta daftar ${p} so’m. ${n} ta daftar necha so’m?`,p*n]}]]);
+addG('mat',[6],[['Manfiy sonlar',g=>{let a=R(20),b=a+R(20);return[`${a} − ${b} = ?`,a-b]}]]);
+addG('alg',[7,8,9,10,11],[
+['ax + b = c',g=>{let x=R(9),a=R(5)+1,b=R(9);return[`${a}x + ${b} = ${a*x+b} bo’lsa, x = ?`,x]}],
+['Modul',g=>{let a=R(30),b=R(30);return[`|${a} − ${b}| = ?`,Math.abs(a-b)]}],
+['Kvadrat ildiz',g=>{let x=R(8+g);return[`√${x*x} = ?`,x]}],
+['Darajaga ko’tarish',g=>{let x=R(4)+1,y=R(2)+1;return[`${x}^${y+1} = ?`,x**(y+1)]}],
+['Diskriminant',g=>{let a=R(4),b=R(9),c=R(4);return[`${a}x² + ${b}x + ${c} = 0 tenglamaning diskriminanti?`,b*b-4*a*c]}],
+['Kvadrat tenglama ildizi',g=>{let p=R(9),r=R(9);return[`x² − ${p+r}x + ${p*r} = 0 tenglamaning katta ildizi?`,Math.max(p,r)]}],
+['Arifmetik progressiya n-hadi',g=>{let a=R(10),d=R(5),n=R(8)+3;return[`a₁ = ${a}, d = ${d} bo’lsa, a${n} = ?`,a+(n-1)*d]}],
+['Arifmetik progressiya yig’indisi',g=>{let a=R(10),d=R(5),n=R(8)+2;return[`a₁ = ${a}, d = ${d} bo’lsa, dastlabki ${n} hadi yig’indisi?`,n*(2*a+(n-1)*d)/2]}],
+['Geometrik progressiya',g=>{let b=R(4),q=R(2)+1,n=R(3)+2;return[`b₁ = ${b}, q = ${q} bo’lsa, b${n} = ?`,b*q**(n-1)]}],
+['Faktorial',g=>{let n=R(6)+1;return[`${n}! = ?`,[...Array(n).keys()].reduce((p,i)=>p*(i+1),1)]}],
+['Kombinatsiya',g=>{let n=R(8)+2;return[`${n} kishidan 2 kishini necha usul bilan tanlash mumkin?`,n*(n-1)/2]}],
+['Funksiya qiymati',g=>{let a=R(5),b=R(9),x=R(9);return[`f(x) = ${a}x + ${b} bo’lsa, f(${x}) = ?`,a*x+b]}],
+['Hosila qiymati',g=>{let a=R(5),b=R(9),x=R(5);return[`f(x) = ${a}x² + ${b}x bo’lsa, f’(${x}) = ?`,2*a*x+b]}],
+['Aniq integral',g=>{let k=R(6);return[`∫ 2x dx (0 dan ${k} gacha) = ?`,k*k]}],
+['Logarifm hisoblash',g=>{let b=pk([2,3,5]),n=R(3)+1;return[`log_${b}(${b**n}) = ?`,n]}]]);
+addG('gm',[7,8,9,10,11],[
+['To’rtburchak perimetri',rp],['To’rtburchak yuzi',ry],
+['Uchburchakning uchinchi burchagi',g=>{let a=R(70)+10,b=R(70)+10;return[`Uchburchakning ikki burchagi ${a}° va ${b}° bo’lsa, uchinchisi?`,180-a-b]}],
+['Pifagor: gipotenuza',g=>{let[t,u,v]=pk(TR);return[`Katetlari ${t} va ${u} bo’lgan to’g’ri burchakli uchburchak gipotenuzasi?`,v]}],
+['Pifagor: katet',g=>{let[t,u,v]=pk(TR);return[`Gipotenuza ${v}, bir katet ${t} bo’lsa, ikkinchi katet?`,u]}],
+['Aylana uzunligi (π≈3)',g=>{let r=R(12);return[`Radiusi ${r} bo’lgan aylana uzunligi (π ≈ 3 deb oling)?`,6*r]}],
+['Doira yuzi (π≈3)',g=>{let r=R(12);return[`Radiusi ${r} bo’lgan doira yuzi (π ≈ 3 deb oling)?`,3*r*r]}],
+['Kub hajmi',g=>{let a=R(9)+1;return[`Qirrasi ${a} bo’lgan kub hajmi?`,a**3]}],
+['Parallelepiped hajmi',g=>{let a=R(9)+1,b=R(9)+1,c=R(9)+1;return[`O’lchamlari ${a}, ${b}, ${c} bo’lgan parallelepiped hajmi?`,a*b*c]}],
+['Ko’pburchak burchaklari yig’indisi',g=>{let n=R(7)+3;return[`${n} burchakli qavariq ko’pburchak ichki burchaklari yig’indisi?`,(n-2)*180]}],
+['Diagonallar soni',g=>{let n=R(7)+4;return[`${n} burchakli qavariq ko’pburchakning diagonallari soni?`,n*(n-3)/2]}]]);
+addG('fiz',[7,8,9,10,11],[
+['Tezlik (v = s/t)',g=>{let v=R(9)*5,t=R(9)+1;return[`${v*t} m yo’lni ${t} s da bosgan jismning tezligi (m/s)?`,v]}],
+['Yo’l (s = v·t)',g=>{let v=R(9)*5,t=R(9)+1;return[`Tezligi ${v} m/s bo’lgan jism ${t} s da necha metr yo’l bosadi?`,v*t]}],
+['Vaqt (t = s/v)',g=>{let v=R(9)*5,t=R(9)+1;return[`${v*t} m yo’lni ${v} m/s tezlik bilan necha sekundda bosadi?`,t]}],
+['Nyutonning 2-qonuni',g=>{let m=R(20),a=R(9)+1;return[`Massasi ${m} kg jism ${a} m/s² tezlanish bilan harakatlanmoqda. Kuch (N)?`,m*a]}],
+['Massa (m = ρV)',g=>{let r=R(9)*100,v=R(5);return[`Zichligi ${r} kg/m³, hajmi ${v} m³ bo’lgan jism massasi (kg)?`,r*v]}],
+['Bosim (p = F/S)',g=>{let p=R(9)*10,s=R(9)+1;return[`${p*s} N kuch ${s} m² yuzaga ta’sir qilsa, bosim (Pa)?`,p]}],
+['Mexanik ish (A = F·s)',g=>{let f=R(9)*10,s=R(9)+1;return[`${f} N kuch ta’sirida jism ${s} m yo’l bosdi. Ish (J)?`,f*s]}],
+['Quvvat (N = A/t)',g=>{let n=R(9)*10,t=R(9)+1;return[`${n*t} J ish ${t} s da bajarilsa, quvvat (W)?`,n]}],
+['Kuchlanish (U = I·R)',g=>{let i=R(9),r=R(9)*2;return[`Tok kuchi ${i} A, qarshilik ${r} Ω bo’lsa, kuchlanish (V)?`,i*r]}],
+['Tok kuchi (I = U/R)',g=>{let i=R(9),r=R(9)*2;return[`${i*r} V kuchlanishda ${r} Ω qarshilikdan o’tuvchi tok (A)?`,i]}],
+['Potensial energiya (E = mgh)',g=>{let m=R(9),h=R(9)*2;return[`${m} kg jism ${h} m balandlikda (g = 10 m/s²). Potensial energiyasi (J)?`,m*10*h]}]]);
+// ===== EKRANLAR =====
+function home(){st={s:null,g:null,p:null};
+ $.innerHTML=`<div class="grid">${SUBJ.filter(s=>s.i!="alg"&&s.i!="gm").map(s=>`<div class="sub" style="--h:${s.h}" onclick="pick('${s.i}')"><span class="e">${s.e}</span><b>${s.n}</b></div>`).join("")}</div>
+ <div class="panel" style="margin-top:16px"><b>🔍 Mavzuni qidiring</b><input id="sq" oninput="find(this.value)" placeholder="Masalan: Pifagor, Fe’l, Navoiy, Hujayra…" style="width:100%;margin-top:8px;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit"><div id="sr" style="margin-top:10px"></div></div>
+ <p class="c mut">Yoki: fanni tanlang → sinfni tanlang → mavzuni tanlang</p>`}
+function find(v){v=v.trim().toLowerCase().replace(/['‘`ʻʼ]/g,"’");const o=[];
+ if(v.length>1)SUBJ.forEach(S=>Object.keys(S.T).forEach(g=>S.T[g].forEach((t,i)=>{if(o.length<25&&(t.toLowerCase().includes(v)||S.n.toLowerCase().includes(v)))o.push(`<div class="topic"><div class="n"><b>${t}</b><small>${S.e} ${S.n} · ${g}-sinf</small></div><button onclick="go('${S.i}',${g},${i})">Test</button></div>`)})));
+ document.getElementById("sr").innerHTML=o.join("")||(v.length>1?'<p class="mut">Mavzu topilmadi.</p>':"")}
+function go(i,g,t){st=(i=="alg"||i=="gm")?{s:"mat",g,p:i}:{s:i,g,p:null};start(t)}
+function pick(i){st={s:i,g:null,p:null};subj()}
+function grades(s){return s=="mat"?[5,6,7,8,9,10,11]:Object.keys(sub(s).T).map(Number)}
+function subj(){const S=sub(st.s),gs=grades(st.s),e=eff();
+ let h=`<div class="panel"><div class="top"><button class="ghost" onclick="home()">← Orqaga</button><h2>${S.e} ${S.n}</h2></div><b>Sinf:</b><div class="chips">${gs.map(g=>`<span class="chip ${st.g==g?"on":""}" onclick="st.g=${g};st.p=null;subj()">${g}-sinf</span>`).join("")}</div>`;
+ if(st.s=="mat"&&st.g>=7)h+=`<b>Bo’lim:</b><div class="chips">${[["alg","Algebra"],["gm","Geometriya"]].map(([k,n])=>`<span class="chip ${st.p==k?"on":""}" onclick="st.p='${k}';subj()">${n}</span>`).join("")}</div>`;
+ if(st.g&&e){const E=sub(e),ts=E.T[st.g]||[];h+=`<b>Mavzular:</b><div style="margin-top:10px">${ts.map((t,i)=>{const n=bank(e,st.g,i).length,best=store(`b:${e}:${st.g}:${i}`);
+  return`<div class="topic"><div class="n"><b>${i+1}. ${t}</b><small>${isGen(e,i,st.g)?"Cheksiz savollar":(SM&&n<25?"25 ta savol":n+" ta savol")}${best?" · Eng yaxshi: "+best+"%":""}</small></div><a class="btn vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(E.n+" "+st.g+"-sinf "+t+" dars")}">▶ Video</a><button onclick="start(${i})">Testni boshlash</button></div>`}).join("")}</div>`}
+ else h+=`<p class="mut">${st.g?"Bo’limni tanlang.":"Avval sinfni tanlang."}</p>`;
+ if(st.g&&e)h+=aiBlock(e);$.innerHTML=h+"</div>"}
+function start(t){if(typeof t=="string")return startAI(t);const e=eff(),E=sub(e);let qs=[];if(!isGen(e,t,st.g)&&bank(e,st.g,t).length<25&&SM)return startAI(E.T[st.g][t]);
+ if(isGen(e,t,st.g))for(let i=0;i<25;i++)qs.push(gen(e,st.g,t));
+ else{let p=bank(e,st.g,t);p=sh(p);if(p.length<25)p=p.concat(sh(BANK.filter(b=>b.s==e&&b.g==st.g&&b.t!=t)));if(p.length<25)p=p.concat(sh(BANK.filter(b=>b.s==e&&b.g!=st.g)));
+  qs=p.slice(0,25).map(b=>({q:b.q,o:b.o,c:0}))}
+ if(!qs.length){alert("Bu fan uchun savollar tez orada qo’shiladi.");return}
+ qs=qs.map(x=>{const c=x.o[0];x.o=sh(x.o);x.c=x.o.indexOf(c);return x});
+ qz={qs,i:0,sc:0,t,e,done:false};show()}
+function show(){const{qs,i}=qz,x=qs[i];
+ $.innerHTML=`<div class="panel"><div class="top"><button class="ghost" onclick="subj()">✕ Chiqish</button><h2>${i+1} / ${qs.length}</h2><b>✔ ${qz.sc}</b></div><div class="bar"><i style="width:${i/qs.length*100}%"></i></div><div class="q">${x.q}</div>${x.o.map((o,k)=>`<button class="opt" onclick="ans(${k})">${o}</button>`).join("")}<div id="nx"></div></div>`}
+function ans(k){if(qz.done)return;qz.done=true;const x=qz.qs[qz.i],b=document.querySelectorAll(".opt");
+ b.forEach((el,j)=>{el.disabled=true;if(j==x.c)el.classList.add("ok")});
+ if(k==x.c)qz.sc++;else b[k].classList.add("no");
+ const last=qz.i==qz.qs.length-1;
+ document.getElementById("nx").innerHTML=`<button onclick="next()" style="margin-top:6px">${last?"Natijani ko’rish":"Keyingisi →"}</button>`}
+function next(){qz.done=false;qz.i++;qz.i<qz.qs.length?show():res()}
+function res(){const p=Math.round(qz.sc/qz.qs.length*100),k=`b:${qz.e}:${st.g}:${qz.t}`;
+ if(p>(+store(k)||0))store(k,p);
+ $.innerHTML=`<div class="panel c"><h2>${p>=80?"🏆 Ajoyib!":p>=50?"👍 Yaxshi!":"💪 Yana urinib ko’ring!"}</h2><div class="score">${p}%</div><p>${qz.qs.length} ta savoldan ${qz.sc} tasi to’g’ri</p><button onclick="start(qz.t)">🔁 Qayta topshirish</button> <button class="ghost" onclick="subj()">Mavzularga qaytish</button></div>`}
+const proxy={json:async p=>{const r=await fetch('/.netlify/functions/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p})});if(!r.ok)throw new Error('Server javob bermadi ('+r.status+'). Netlify funksiyasi va ANTHROPIC_API_KEY ni tekshiring.');return r.json()}};
+let SM=proxy,cur=[];try{window.claude.use('sample').then(s=>{if(s)SM=s}).catch(()=>{})}catch(e){}
+function aiBlock(e){const E=sub(e);let at=[];try{at=JSON.parse(store(`t:${e}:${st.g}`)||'[]')}catch(x){}cur=at;
+ return `<div style="margin-top:18px"><div class="top"><b style="flex:1">✨ Qo’shimcha mavzular: ${at.length} ta</b><button onclick="genTopics()">${at.length?'Yana mavzu qo’shish':'📚 50 ta mavzuni yuklash'}</button></div>${at.map((t,i)=>`<div class="topic"><div class="n"><b>${t}</b><small>25 ta savol · Claude tuzadi</small></div><a class="btn vid" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${encodeURIComponent(E.n+' '+st.g+'-sinf '+t+' dars')}">▶ Video</a><button onclick="start(cur[${i}])">Testni boshlash</button></div>`).join('')}${SM?'':'<p class="mut">Claude yordamidagi mavzular bu yerda hozircha ishlamayapti.</p>'}</div>`}
+async function genTopics(){const e=eff(),E=sub(e),k=`t:${e}:${st.g}`;let old=[];try{old=JSON.parse(store(k)||'[]')}catch(x){}
+ const have=[...E.T[st.g],...old];
+ if(!SM){try{SM=await window.claude.use('sample')}catch(x){}}
+ if(!SM){alert('Claude funksiyasi bu yerda mavjud emas. Ilovani claude.ai dagi havola orqali oching va ruxsat bering.');subj();return}
+ $.innerHTML=`<div class="panel c"><h2>⏳ Mavzular tuzilmoqda…</h2><p class="mut">10–30 soniya kuting</p></div>`;
+ try{const r=await SM.json(`O’zbekiston umumta’lim maktablari dasturi bo’yicha ${st.g}-sinf «${E.n}» fani uchun darslik mavzulari ro’yxatini tuz. Hozirgi mavzular: ${have.join('; ')}. Shularga kirmagan yana 50 ta alohida, aniq mavzu nomini ber (qisqa, o’zbek tilida; xorijiy til fanlarida mavzu nomi o’zbekcha bo’lsin). Faqat JSON massiv (satrlar ro’yxati) qaytar.`,{modelTier:'quick'});
+  store(k,JSON.stringify(old.concat((Array.isArray(r)?r:Object.values(r||{}).flat()).filter(x=>typeof x=='string'&&!have.includes(x))).slice(0,150)))}catch(x){alert('Xatolik: '+(x&&x.message||x))}
+ subj()}
+async function startAI(name){const e=eff(),E=sub(e),k=`q:${e}:${st.g}:${name}`.slice(0,150);let qs=null;
+ try{qs=JSON.parse(store(k)||'null')}catch(x){}
+ if(!qs){$.innerHTML=`<div class="panel c"><h2>⏳ 25 ta savol tuzilmoqda…</h2><p class="mut">${name} · 10–30 soniya kuting</p></div>`;
+  try{const r=await SM.json(`Sen O’zbekiston maktab o’qituvchisisan. ${st.g}-sinf «${E.n}» fanidan «${name}» mavzusi bo’yicha aynan 25 ta test savoli tuz. O’zbek tilida yoz (xorijiy til fanlarida kerakli tilda). Har bir savolda 4 ta variant va bitta to’g’ri javob bo’lsin. Faqat aniq, ishonchli faktlarni ishlat. Faqat JSON massiv qaytar: har bir element q (savol matni) va o (4 ta variant massivi) kalitlariga ega; o massivining birinchi elementi doim to’g’ri javob bo’lsin.`,{modelTier:'default'});
+   qs=r.filter(x=>x&&x.q&&Array.isArray(x.o)&&x.o.length>=4).map(x=>({q:String(x.q),o:x.o.slice(0,4).map(String),c:0}));
+   if(qs.length<5)throw new Error('Savollar olinmadi, qayta urinib ko’ring');store(k,JSON.stringify(qs))}
+  catch(x){$.innerHTML=`<div class="panel c"><h2>😕 Xatolik</h2><p>${x&&x.message||x}</p><button onclick="subj()">← Orqaga</button></div>`;return}}
+ qs=qs.map(x=>{const c=x.o[0];x.o=sh(x.o);x.c=x.o.indexOf(c);return x});qz={qs,i:0,sc:0,t:name,e,done:false};show()}
+home();
+</script></body></html>
